@@ -16,8 +16,35 @@ inventory/hosts.ini
 
 ### Recommended!~ .
 ```
-You must Use Ubuntu 24.04~Noble for this Ansible
+You must Use Ubuntu 24.04~Noble for this Ansible (Tested in Ubuntu 24.04)
 ```
+
+### Topology!~ .
+### ------------
+### (You Can Increase Master and Worker in Senario)
+
+
+                        ------------                        ------------
+                       | HA_PROXY 1 |                      | HA_PROXY 2 |
+                        ------------                        ------------
+                             |                                   |
+                             |                                   |
+                ------------------------------ -------------------------------
+               |                              |                               |
+               |                              |                               |
+        --------------                 --------------                   --------------
+       | K8S-Master 1 |               | K8S-Master 2 |                 | K8S-Master 3 |
+        --------------                 --------------                   --------------
+               |                              |                               |
+               |                              |                               |
+                ------------------------------ -------------------------------  
+               |                              |                               |
+               |                              |                               |
+        --------------                 --------------                   --------------
+       | K8S-Worker 1 |               | K8S-Worker 2 |                 | K8S-Worker 3 |
+        --------------                 --------------                   --------------
+
+  
 
 ## Run Ansible:
 ```
