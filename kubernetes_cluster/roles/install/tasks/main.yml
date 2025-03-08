@@ -1,0 +1,46 @@
+- name: SWAP off
+  command: swapoff -a
+
+- name: Disable SWAP
+  lineinfile:
+    path: "{{ fstab }}"
+    regexp: '^/swap.img'
+    line: '#/swap.img      none    swap    sw      0       0'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Check Docker List
+  stat:
+    path: "{{ docker }}"
+  register: docker_list
+
+- name: Docker GPG Key
+  shell: |
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  when: docker_list.stat.exists == False
+
+- name: apt update and install Docker package
+  apt:
+    pkg:
+      - docker-ce=5:28.0.1-1~ubuntu.24.04~noble
+      - docker-ce-cli=5:28.0.1-1~ubuntu.24.04~noble
+      - containerd.io=1.7.25-1
+      - docker-buildx-plugin=0.21.1-1~ubuntu.24.04~noble
+      - docker-compose-plugin=2.33.1-1~ubuntu.24.04~noble
+    state: present
+    update_cache: yes
+
+- name: Containerd_Config
+  include_tasks:
+    file: containerd_config.yml
+
+- name: Kubernetes_Package
+  include_tasks:
+    file: kubernetes_package.yml

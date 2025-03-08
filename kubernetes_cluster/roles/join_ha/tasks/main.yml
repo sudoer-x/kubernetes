@@ -1,0 +1,17 @@
+- name: Push to Other Master
+  copy:
+    src: "join/{{ hostvars[item].inventory_hostname_short }}/tmp/"
+    dest: /tmp/
+  with_items: "{{ groups.master }}"
+
+- name: Set Variable
+  shell: cat /tmp/join_control_plane
+  register: join
+
+- name: JOIN
+  shell: "{{ join.stdout }}"      
+
+- name: Pause for 2 minutes to build app cache
+  ansible.builtin.pause:
+    minutes: 2
+    

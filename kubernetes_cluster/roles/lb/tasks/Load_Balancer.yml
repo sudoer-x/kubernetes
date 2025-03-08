@@ -1,0 +1,16 @@
+- name: Backup Original File
+  copy:
+    src: "{{ haproxy }}"
+    dest: "{{ backup_haproxy }}"
+    remote_src: yes
+
+- name: Configuration HAProxy
+  template:
+    src: haproxy.cfg.j2
+    dest: "{{ haproxy }}"
+
+- name: Restart and Enable HAProxy
+  service: 
+    name: haproxy
+    state: restarted
+    enabled: true
